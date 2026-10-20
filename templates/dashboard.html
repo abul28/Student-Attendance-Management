@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Executive Dashboard | Student Attendance Management System{% endblock %}
+
+{% block content %}
+<!-- Top Header Banner -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h3 class="fw-bold text-dark mb-1">
+      <i class="bi bi-speedometer2 text-primary me-2"></i> Attendance Dashboard
+    </h3>
+    <p class="text-muted mb-0 small">
+      Live summary metrics, session statistics, and student turnout monitoring for 
+      <strong class="text-dark">{{ display_date }}</strong>
+    </p>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <a href="{{ url_for('attendance', date=today_date) }}" class="btn btn-primary btn-sm px-3 shadow-sm" style="background-color: #1A365D; border-color: #1A365D;">
+      <i class="bi bi-calendar-plus me-1"></i> Mark Today's Attendance
+    </a>
+    <a href="{{ url_for('students_list') }}" class="btn btn-outline-secondary btn-sm px-3 bg-white">
+      <i class="bi bi-person-plus me-1"></i> Add Student
+    </a>
+    <a href="{{ url_for('reports') }}" class="btn btn-outline-primary btn-sm px-3 bg-white">
+      <i class="bi bi-file-earmark-bar-graph me-1"></i> View Reports
+    </a>
+  </div>
+</div>
+
+<!-- 4 Key Metric Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-12 col-sm-6 col-xl-3">
+    <div class="stat-card stat-blue">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-label">Total Enrolled</div>
+          <div class="stat-number">{{ total_students }}</div>
+          <div class="small text-muted mt-1">Across 3 academic disciplines</div>
+        </div>
+        <div class="stat-icon">
+          <i class="bi bi-people-fill"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-sm-6 col-xl-3">
+    <div class="stat-card stat-green">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-label">Present ({{ display_date }})</div>
+          <div class="stat-number text-success">{{ present_count }}</div>
+          <div class="small text-muted mt-1">Confirmed attendees</div>
+        </div>
+        <div class="stat-icon">
+          <i class="bi bi-person-check-fill"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-sm-6 col-xl-3">
+    <div class="stat-card stat-red">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-label">Absent ({{ display_date }})</div>
+          <div class="stat-number text-danger">{{ absent_count }}</div>
+          <div class="small text-muted mt-1">Absentees recorded</div>
+        </div>
+        <div class="stat-icon">
+          <i class="bi bi-person-x-fill"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-sm-6 col-xl-3">
+    <div class="stat-card stat-purple">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="stat-label">Attendance Rate</div>
+          <div class="stat-number" style="color: #6B46C1;">{{ attendance_rate }}%</div>
+          <div class="small text-muted mt-1">Overall session turnout</div>
+        </div>
+        <div class="stat-icon">
+          <i class="bi bi-pie-chart-fill"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Middle Section: Eligibility & Department Distribution -->
+<div class="row g-4 mb-4">
+  <!-- Exam Eligibility Health Card -->
+  <div class="col-12 col-lg-7">
+    <div class="card border-0 shadow-sm rounded-3 h-100 p-3 bg-white">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0 text-dark">
+          <i class="bi bi-shield-check text-success me-2"></i> Examination Eligibility Overview
+        </h5>
+        <span class="badge bg-light text-secondary border">Academic Threshold: {{ threshold }}%</span>
+      </div>
+
+      <p class="text-muted small mb-3">
+        Cumulative analysis computed across <strong>{{ total_sessions }}</strong> conducted lecture sessions stored in memory:
+      </p>
+
+      <div class="row g-3 mb-3">
+        <div class="col-6">
+          <div class="p-3 rounded-3" style="background-color: #F0FFF4; border: 1px solid #C6F6D5;">
+            <div class="small fw-semibold text-success text-uppercase">Eligible Students (&ge; 75%)</div>
+            <div class="fs-3 fw-bold text-success">{{ eligible_count }}</div>
+            <div class="small text-muted">Cleared for semester examinations</div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="p-3 rounded-3" style="background-color: #FFF5F5; border: 1px solid #FED7D7;">
+            <div class="small fw-semibold text-danger text-uppercase">Defaulters (&lt; 75%)</div>
+            <div class="fs-3 fw-bold text-danger">{{ defaulter_count }}</div>
+            <div class="small text-muted">Low attendance alert flagged</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Progress Bar -->
+      {% set eligible_pct = ((eligible_count / total_students) * 100) if total_students > 0 else 0 %}
+      <div class="small fw-semibold text-secondary mb-1 d-flex justify-content-between">
+        <span>Class Eligibility Ratio</span>
+        <span>{{ "%.1f"|format(eligible_pct) }}% Eligible</span>
+      </div>
+      <div class="progress" style="height: 12px;">
+        <div class="progress-bar bg-success" role="progressbar" style="width: {{ eligible_pct }}%;" aria-valuenow="{{ eligible_pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+        <div class="progress-bar bg-danger" role="progressbar" style="width: {{ 100 - eligible_pct }}%;" aria-valuenow="{{ 100 - eligible_pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Department Distribution Card -->
+  <div class="col-12 col-lg-5">
+    <div class="card border-0 shadow-sm rounded-3 h-100 p-3 bg-white">
+      <h5 class="fw-bold mb-3 text-dark">
+        <i class="bi bi-buildings text-primary me-2"></i> Department Breakdown
+      </h5>
+
+      <div class="list-group list-group-flush">
+        {% for dept, count in dept_stats.items() %}
+        <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 border-bottom">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-mortarboard-fill text-secondary"></i>
+            <span class="fw-medium text-dark">{{ dept }}</span>
+          </div>
+          <span class="badge bg-primary rounded-pill px-3 py-1" style="background-color: #1A365D !important;">{{ count }} Students</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="mt-auto pt-3 text-end">
+        <a href="{{ url_for('students_list') }}" class="small fw-semibold text-primary text-decoration-none">
+          Manage Student Roster <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Section: Recent Logged Sessions Table -->
+<div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0 text-dark">
+      <i class="bi bi-clock-history text-secondary me-2"></i> Recent Attendance Sessions
+    </h5>
+    <a href="{{ url_for('attendance') }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-calendar3 me-1"></i> Open Attendance Ledger
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-custom table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Session Date</th>
+          <th>Total Roster</th>
+          <th>Present Count</th>
+          <th>Absent Count</th>
+          <th>Turnout Rate</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for act in recent_activity %}
+        <tr>
+          <td class="fw-semibold">
+            <i class="bi bi-calendar-event text-primary me-2"></i> {{ act.date }}
+            {% if act.date == today_date %}
+              <span class="badge bg-info text-dark ms-1">Today</span>
+            {% endif %}
+          </td>
+          <td>{{ act.total }}</td>
+          <td><span class="text-success fw-bold">{{ act.present }}</span></td>
+          <td><span class="text-danger fw-bold">{{ act.absent }}</span></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="fw-semibold">{{ act.rate }}%</span>
+              <div class="progress flex-grow-1" style="height: 6px; min-width: 60px;">
+                <div class="progress-bar {% if act.rate >= 75 %}bg-success{% else %}bg-warning{% endif %}" style="width: {{ act.rate }}%;"></div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center">
+            <a href="{{ url_for('attendance', date=act.date) }}" class="btn btn-sm btn-outline-primary py-1 px-2 rounded">
+              <i class="bi bi-pencil-square me-1"></i> Review / Edit
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center py-4 text-muted">No attendance sessions logged yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

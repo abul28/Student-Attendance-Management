@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Mark Attendance | Student Attendance System{% endblock %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('attendance') }}">
+  <!-- Top Header with Actions -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1">
+        <i class="bi bi-calendar-check-fill text-primary me-2"></i> Daily Attendance Marking Sheet
+      </h3>
+      <p class="text-muted mb-0 small">
+        Select calendar date, toggle Present or Absent for each student, and submit the roster to save.
+      </p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="btn btn-outline-success btn-sm px-3 bg-white" id="btnMarkAllPresent">
+        <i class="bi bi-check2-all me-1"></i> Mark All Present
+      </button>
+      <button type="button" class="btn btn-outline-danger btn-sm px-3 bg-white" id="btnMarkAllAbsent">
+        <i class="bi bi-x-circle me-1"></i> Mark All Absent
+      </button>
+      <button type="submit" class="btn btn-success btn-sm px-4 fw-semibold shadow-sm" style="background-color: #276749; border-color: #276749;">
+        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Save Attendance
+      </button>
+    </div>
+  </div>
+
+  <!-- Date & Filter Toolbar -->
+  <div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white">
+    <div class="row g-3 align-items-center">
+      <!-- Target Date Picker -->
+      <div class="col-12 col-md-4">
+        <label for="attendanceDatePicker" class="form-label small fw-semibold text-secondary mb-1">
+          <i class="bi bi-calendar-event me-1"></i> SELECT DATE:
+        </label>
+        <div class="input-group input-group-sm">
+          <input type="date" id="attendanceDatePicker" name="date" class="form-control fw-bold" value="{{ target_date }}" required>
+          <a href="{{ url_for('attendance', date=today_iso) }}" class="btn btn-outline-primary" title="Jump to Today">Today</a>
+        </div>
+      </div>
+
+      <!-- Department Filter Dropdown -->
+      <div class="col-12 col-md-4">
+        <label for="deptAttendanceFilter" class="form-label small fw-semibold text-secondary mb-1">
+          <i class="bi bi-funnel me-1"></i> DEPARTMENT FILTER:
+        </label>
+        <select id="deptAttendanceFilter" class="form-select form-select-sm" onchange="window.location.href='{{ url_for('attendance', date=target_date) }}&department=' + this.value">
+          <option value="">-- All Departments ({{ students|length }}) --</option>
+          {% for dept in departments %}
+            <option value="{{ dept }}" {% if dept == current_dept %}selected{% endif %}>{{ dept }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Status Indicator Pill -->
+      <div class="col-12 col-md-4 text-md-end">
+        {% if has_saved_records %}
+          <div class="badge bg-success bg-opacity-10 text-success border border-success p-2 px-3 rounded-3 text-start d-inline-block">
+            <div class="fw-bold"><i class="bi bi-check-circle-fill me-1"></i> Records Saved for {{ target_date }}</div>
+            <div class="small text-muted">Present: <strong>{{ day_present }}</strong> &bull; Absent: <strong>{{ day_absent }}</strong></div>
+          </div>
+        {% else %}
+          <div class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning p-2 px-3 rounded-3 text-start d-inline-block">
+            <div class="fw-bold"><i class="bi bi-clock-fill me-1"></i> Unsaved / New Session</div>
+            <div class="small text-muted">Defaulting roster to 'Present'</div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance Table -->
+  <div class="card border-0 shadow-sm rounded-3 p-3 bg-white mb-4">
+    <div class="table-responsive">
+      <table class="table table-custom table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="width: 80px;">S.No</th>
+            <th>Roll Number</th>
+            <th>Student Name</th>
+            <th>Department</th>
+            <th class="text-center" style="width: 260px;">Attendance Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in students %}
+          {% set current_status = current_log.get(s.roll_no, 'Present') %}
+          <tr>
+            <td class="text-muted small">{{ loop.index }}</td>
+            <td>
+              <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold">{{ s.roll_no }}</span>
+            </td>
+            <td>
+              <div class="fw-semibold text-dark">{{ s.name }}</div>
+              <div class="small text-muted">{{ s.email }}</div>
+            </td>
+            <td>
+              <span class="badge bg-secondary bg-opacity-10 text-secondary">{{ s.department }}</span>
+            </td>
+            <td class="text-center">
+              <div class="attendance-toggle-group">
+                <input type="radio" id="p_{{ s.roll_no }}" name="status_{{ s.roll_no }}" value="Present" {% if current_status == 'Present' %}checked{% endif %}>
+                <label for="p_{{ s.roll_no }}"><i class="bi bi-check-lg me-1"></i> Present</label>
+
+                <input type="radio" id="a_{{ s.roll_no }}" name="status_{{ s.roll_no }}" value="Absent" {% if current_status == 'Absent' %}checked{% endif %}>
+                <label for="a_{{ s.roll_no }}"><i class="bi bi-x-lg me-1"></i> Absent</label>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center py-4 text-muted">No students available for this department selection.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Floating / Bottom Submit Button -->
+  <div class="d-flex justify-content-between align-items-center p-3 bg-white rounded-3 shadow-sm border">
+    <span class="small text-muted">
+      <i class="bi bi-info-circle me-1"></i> Review your Present/Absent selections before saving to ensure data accuracy.
+    </span>
+    <button type="submit" class="btn btn-success px-4 py-2 fw-semibold" style="background-color: #276749; border-color: #276749;">
+      <i class="bi bi-cloud-arrow-up-fill me-1"></i> Save {{ target_date }} Attendance
+    </button>
+  </div>
+</form>
+{% endblock %}

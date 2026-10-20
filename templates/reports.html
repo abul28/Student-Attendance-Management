@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance Summary Reports | Student Attendance System{% endblock %}
+
+{% block content %}
+<!-- Academic Print Header (Only visible when printing or exporting) -->
+<div class="print-header">
+  <h4 class="fw-bold mb-0">SRM INSTITUTE OF SCIENCE AND TECHNOLOGY</h4>
+  <p class="mb-0 text-muted small">FACULTY OF LIBERAL ARTS AND BUSINESS STUDIES &bull; DEPARTMENT OF COMPUTER SCIENCE</p>
+  <h5 class="fw-bold mt-2 text-decoration-underline">CONSOLIDATED STUDENT ATTENDANCE REPORT</h5>
+  <p class="small text-muted">Generated across {{ total_sessions }} lecture sessions &bull; Academic Threshold: {{ threshold }}%</p>
+  <hr>
+</div>
+
+<!-- On-Screen Top Bar -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 no-print">
+  <div>
+    <h3 class="fw-bold text-dark mb-1">
+      <i class="bi bi-file-earmark-bar-graph-fill text-primary me-2"></i> Attendance Summary Reports
+    </h3>
+    <p class="text-muted mb-0 small">
+      Cumulative attendance percentages, defaulter identification, and academic eligibility ledgers.
+    </p>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <button type="button" class="btn btn-outline-secondary btn-sm px-3 bg-white" onclick="window.print()">
+      <i class="bi bi-printer me-1"></i> Print Report
+    </button>
+    <a href="{{ url_for('export_csv') }}" class="btn btn-primary btn-sm px-3 shadow-sm" style="background-color: #1A365D; border-color: #1A365D;">
+      <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export to CSV
+    </a>
+  </div>
+</div>
+
+<!-- Metric Banner -->
+<div class="row g-3 mb-4 no-print">
+  <div class="col-12 col-md-4">
+    <div class="p-3 bg-white border rounded-3 shadow-sm d-flex align-items-center justify-content-between">
+      <div>
+        <div class="small text-muted fw-semibold text-uppercase">Total Sessions Held</div>
+        <div class="fs-4 fw-bold text-dark">{{ total_sessions }} Sessions</div>
+      </div>
+      <i class="bi bi-journal-text fs-2 text-primary opacity-50"></i>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-4">
+    <div class="p-3 bg-white border rounded-3 shadow-sm d-flex align-items-center justify-content-between">
+      <div>
+        <div class="small text-muted fw-semibold text-uppercase">Eligible (&ge; {{ threshold }}%)</div>
+        <div class="fs-4 fw-bold text-success">{{ eligible_count }} Students</div>
+      </div>
+      <i class="bi bi-check-circle-fill fs-2 text-success opacity-50"></i>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-4">
+    <div class="p-3 bg-white border rounded-3 shadow-sm d-flex align-items-center justify-content-between">
+      <div>
+        <div class="small text-muted fw-semibold text-uppercase">Defaulters (&lt; {{ threshold }}%)</div>
+        <div class="fs-4 fw-bold text-danger">{{ defaulter_count }} Students</div>
+      </div>
+      <i class="bi bi-exclamation-triangle-fill fs-2 text-danger opacity-50"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Filter Toolbar (No-Print) -->
+<div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white no-print">
+  <div class="row g-3 align-items-center">
+    <!-- Live Search -->
+    <div class="col-12 col-md-4">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+        <input type="text" id="tableSearchInput" class="form-control border-start-0 ps-0" placeholder="Filter by Name or Roll No...">
+      </div>
+    </div>
+
+    <!-- Department Filter -->
+    <div class="col-12 col-md-4">
+      <div class="d-flex align-items-center gap-2">
+        <label for="reportDept" class="form-label text-muted small fw-semibold mb-0 text-nowrap">Department:</label>
+        <select id="reportDept" class="form-select form-select-sm" onchange="applyFilters()">
+          <option value="">-- All Departments --</option>
+          {% for dept in departments %}
+            <option value="{{ dept }}" {% if dept == current_dept %}selected{% endif %}>{{ dept }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Eligibility Status Filter -->
+    <div class="col-12 col-md-4">
+      <div class="d-flex align-items-center gap-2">
+        <label for="reportStatus" class="form-label text-muted small fw-semibold mb-0 text-nowrap">Status:</label>
+        <select id="reportStatus" class="form-select form-select-sm" onchange="applyFilters()">
+          <option value="">-- All Students --</option>
+          <option value="eligible" {% if current_status == 'eligible' %}selected{% endif %}>Eligible (&ge; 75%)</option>
+          <option value="defaulter" {% if current_status == 'defaulter' %}selected{% endif %}>Defaulters Only (&lt; 75%)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary Reports Table -->
+<div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
+  <div class="table-responsive">
+    <table class="table table-custom table-hover align-middle mb-0 searchable-table">
+      <thead>
+        <tr>
+          <th style="width: 120px;">Roll Number</th>
+          <th>Student Name</th>
+          <th>Department</th>
+          <th class="text-center">Conducted</th>
+          <th class="text-center text-success">Present</th>
+          <th class="text-center text-danger">Absent</th>
+          <th style="min-width: 140px;">Attendance %</th>
+          <th class="text-center">Academic Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reports %}
+        <tr class="{% if r.is_defaulter %}table-danger table-opacity-10{% endif %}">
+          <td>
+            <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold">{{ r.roll_no }}</span>
+          </td>
+          <td>
+            <div class="fw-semibold text-dark">{{ r.name }}</div>
+            <div class="small text-muted">{{ r.email }}</div>
+          </td>
+          <td>{{ r.department }}</td>
+          <td class="text-center fw-medium">{{ r.total_sessions }}</td>
+          <td class="text-center text-success fw-bold">{{ r.present_count }}</td>
+          <td class="text-center text-danger fw-bold">{{ r.absent_count }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="fw-bold {% if r.is_defaulter %}text-danger{% else %}text-success{% endif %}">
+                {{ r.percentage }}%
+              </span>
+              <div class="progress flex-grow-1" style="height: 6px;">
+                <div class="progress-bar {% if r.is_defaulter %}bg-danger{% else %}bg-success{% endif %}" style="width: {{ r.percentage }}%;"></div>
+              </div>
+            </div>
+          </td>
+          <td class="text-center">
+            {% if r.is_defaulter %}
+              <span class="badge-defaulter d-inline-flex align-items-center gap-1">
+                <i class="bi bi-exclamation-triangle-fill"></i> Defaulter
+              </span>
+            {% else %}
+              <span class="badge-eligible d-inline-flex align-items-center gap-1">
+                <i class="bi bi-check-circle-fill"></i> Eligible
+              </span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-center py-4 text-muted">No attendance reports match the applied filter.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function applyFilters() {
+  const dept = document.getElementById('reportDept').value;
+  const status = document.getElementById('reportStatus').value;
+  const params = new URLSearchParams();
+  if (dept) params.set('department', dept);
+  if (status) params.set('status', status);
+  window.location.href = "{{ url_for('reports') }}?" + params.toString();
+}
+</script>
+{% endblock %}

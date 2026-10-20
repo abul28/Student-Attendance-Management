@@ -1,0 +1,188 @@
+{
+  "students": [
+    {
+      "id": 1,
+      "roll_no": "CS-2026-001",
+      "name": "Aarav Sharma",
+      "department": "Computer Science",
+      "semester": "Semester V",
+      "email": "aarav.sharma@college.edu",
+      "contact": "+91 98765 43210"
+    },
+    {
+      "id": 2,
+      "roll_no": "CS-2026-002",
+      "name": "Bhavna Patel",
+      "department": "Computer Science",
+      "semester": "Semester V",
+      "email": "bhavna.patel@college.edu",
+      "contact": "+91 98765 43211"
+    },
+    {
+      "id": 3,
+      "roll_no": "CS-2026-003",
+      "name": "Dinesh Kumar",
+      "department": "Computer Science",
+      "semester": "Semester V",
+      "email": "dinesh.k@college.edu",
+      "contact": "+91 98765 43212"
+    },
+    {
+      "id": 4,
+      "roll_no": "CS-2026-004",
+      "name": "Fatima Zahra",
+      "department": "Computer Science",
+      "semester": "Semester V",
+      "email": "fatima.z@college.edu",
+      "contact": "+91 98765 43213"
+    },
+    {
+      "id": 5,
+      "roll_no": "CS-2026-005",
+      "name": "Gokul Nath",
+      "department": "Computer Science",
+      "semester": "Semester V",
+      "email": "gokul.n@college.edu",
+      "contact": "+91 98765 43214"
+    },
+    {
+      "id": 6,
+      "roll_no": "IT-2026-001",
+      "name": "Harini Venkat",
+      "department": "Information Technology",
+      "semester": "Semester V",
+      "email": "harini.v@college.edu",
+      "contact": "+91 98765 43215"
+    },
+    {
+      "id": 7,
+      "roll_no": "IT-2026-002",
+      "name": "Ishaan Roy",
+      "department": "Information Technology",
+      "semester": "Semester V",
+      "email": "ishaan.roy@college.edu",
+      "contact": "+91 98765 43216"
+    },
+    {
+      "id": 8,
+      "roll_no": "AD-2026-001",
+      "name": "Kavya Nair",
+      "department": "AI & Data Science",
+      "semester": "Semester V",
+      "email": "kavya.nair@college.edu",
+      "contact": "+91 98765 43217"
+    },
+    {
+      "id": 9,
+      "roll_no": "AD-2026-002",
+      "name": "Mohamed Rizwan",
+      "department": "AI & Data Science",
+      "semester": "Semester V",
+      "email": "m.rizwan@college.edu",
+      "contact": "+91 98765 43218"
+    },
+    {
+      "id": 10,
+      "roll_no": "CS-2026-006",
+      "name": "Pooja Sundaram",
+      "department": "Computer Science",
+      "semester": "Semester V",
+      "email": "pooja.s@college.edu",
+      "contact": "+91 98765 43219"
+    },
+    {
+      "id": 11,
+      "roll_no": "RA2531005020141",
+      "name": "Abu Shahith",
+      "department": "Computer Science",
+      "semester": "3",
+      "email": "xyz@srmist.edu.in",
+      "contact": "9876543221"
+    }
+  ],
+  "attendance": {
+    "2026-10-14": {
+      "CS-2026-001": "Present",
+      "CS-2026-002": "Present",
+      "CS-2026-003": "Absent",
+      "CS-2026-004": "Present",
+      "CS-2026-005": "Present",
+      "IT-2026-001": "Absent",
+      "IT-2026-002": "Present",
+      "AD-2026-001": "Present",
+      "AD-2026-002": "Present",
+      "CS-2026-006": "Present"
+    },
+    "2026-10-15": {
+      "CS-2026-001": "Present",
+      "CS-2026-002": "Present",
+      "CS-2026-003": "Absent",
+      "CS-2026-004": "Present",
+      "CS-2026-005": "Absent",
+      "IT-2026-001": "Absent",
+      "IT-2026-002": "Present",
+      "AD-2026-001": "Present",
+      "AD-2026-002": "Present",
+      "CS-2026-006": "Absent"
+    },
+    "2026-10-16": {
+      "CS-2026-001": "Present",
+      "CS-2026-002": "Present",
+      "CS-2026-003": "Present",
+      "CS-2026-004": "Present",
+      "CS-2026-005": "Present",
+      "IT-2026-001": "Absent",
+      "IT-2026-002": "Present",
+      "AD-2026-001": "Present",
+      "AD-2026-002": "Present",
+      "CS-2026-006": "Present"
+    },
+    "2026-10-17": {
+      "CS-2026-001": "Present",
+      "CS-2026-002": "Present",
+      "CS-2026-003": "Absent",
+      "CS-2026-004": "Present",
+      "CS-2026-005": "Present",
+      "IT-2026-001": "Absent",
+      "IT-2026-002": "Present",
+      "AD-2026-001": "Present",
+      "AD-2026-002": "Absent",
+      "CS-2026-006": "Present"
+    },
+    "2026-10-20": {
+      "CS-2026-001": "Present",
+      "CS-2026-002": "Present",
+      "CS-2026-003": "Absent",
+      "CS-2026-004": "Present",
+      "CS-2026-005": "Absent",
+      "IT-2026-001": "Present",
+      "IT-2026-002": "Absent",
+      "AD-2026-001": "Present",
+      "AD-2026-002": "Present",
+      "CS-2026-006": "Present"
+    }
+  },
+  "departments": [
+    {
+      "id": 1,
+      "name": "Computer Science",
+      "code": "CSE",
+      "hod": "Dr. R. Rajesh",
+      "description": "Department of Computer Science & Engineering"
+    },
+    {
+      "id": 2,
+      "name": "Information Technology",
+      "code": "IT",
+      "hod": "Dr. S. Priya",
+      "description": "Department of Information Technology"
+    },
+    {
+      "id": 3,
+      "name": "AI & Data Science",
+      "code": "AIDS",
+      "hod": "Dr. K. Anand",
+      "description": "Artificial Intelligence & Data Science Department"
+    }
+  ]
+}

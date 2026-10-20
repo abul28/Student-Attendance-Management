@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Student Management | Student Attendance System{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <div>
+    <h3 class="fw-bold text-dark mb-1">
+      <i class="bi bi-people-fill text-primary me-2"></i> Student Roster Management
+    </h3>
+    <p class="text-muted mb-0 small">
+      Register new admissions, view departmental cohorts, and manage student enrollment records.
+    </p>
+  </div>
+  <div>
+    <button type="button" class="btn btn-primary px-3 shadow-sm" style="background-color: #1A365D; border-color: #1A365D;" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+      <i class="bi bi-person-plus-fill me-1"></i> Add New Student
+    </button>
+  </div>
+</div>
+
+<!-- Search & Department Filter Card -->
+<div class="card border-0 shadow-sm rounded-3 p-3 mb-4 bg-white">
+  <div class="row g-2 align-items-center">
+    <div class="col-12 col-md-5">
+      <div class="input-group">
+        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+        <input type="text" id="tableSearchInput" class="form-control border-start-0 ps-0" placeholder="Type to filter by Name, Roll No, or Department...">
+      </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <div class="d-flex align-items-center gap-2">
+        <label for="deptSelect" class="form-label text-muted small fw-semibold mb-0 text-nowrap">Filter Dept:</label>
+        <select id="deptSelect" class="form-select form-select-sm" onchange="window.location.href='{{ url_for('students_list') }}?department=' + this.value">
+          <option value="">-- All Departments --</option>
+          {% for dept in departments %}
+            <option value="{{ dept }}" {% if dept == current_dept %}selected{% endif %}>{{ dept }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3 text-md-end">
+      <span class="badge bg-light text-secondary border px-3 py-2">
+        Showing <strong>{{ filtered_count }}</strong> of <strong>{{ total_count }}</strong> Students
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Student Roster Table -->
+<div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
+  <div class="table-responsive">
+    <table class="table table-custom table-hover align-middle mb-0 searchable-table">
+      <thead>
+        <tr>
+          <th>Roll No</th>
+          <th>Student Name</th>
+          <th>Department</th>
+          <th>Semester</th>
+          <th>Contact &amp; Email</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td>
+            <span class="badge bg-light text-dark border px-2 py-1 font-monospace fw-bold">{{ s.roll_no }}</span>
+          </td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                {{ s.name[0] }}
+              </div>
+              <span class="fw-semibold text-dark">{{ s.name }}</span>
+            </div>
+          </td>
+          <td>{{ s.department }}</td>
+          <td><span class="badge bg-secondary bg-opacity-10 text-secondary">{{ s.semester }}</span></td>
+          <td>
+            <div class="small text-muted">
+              <div><i class="bi bi-envelope me-1"></i> {{ s.email }}</div>
+              <div><i class="bi bi-telephone me-1"></i> {{ s.contact }}</div>
+            </div>
+          </td>
+          <td class="text-center">
+            <div class="btn-group btn-group-sm">
+              <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editStudentModal{{ s.id }}" title="Edit Details">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteStudentModal{{ s.id }}" title="Delete Student">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Edit Modal for Student {{ s.id }} -->
+        <div class="modal fade" id="editStudentModal{{ s.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form method="POST" action="{{ url_for('edit_student', student_id=s.id) }}">
+                <div class="modal-header bg-light">
+                  <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square text-primary me-2"></i> Edit Student: {{ s.roll_no }}</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Roll Number (Fixed)</label>
+                    <input type="text" class="form-control" value="{{ s.roll_no }}" disabled>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Full Name</label>
+                    <input type="text" class="form-control" name="name" value="{{ s.name }}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Department</label>
+                    <select class="form-select" name="department" required>
+                      <option value="Computer Science" {% if s.department == 'Computer Science' %}selected{% endif %}>Computer Science</option>
+                      <option value="Information Technology" {% if s.department == 'Information Technology' %}selected{% endif %}>Information Technology</option>
+                      <option value="AI & Data Science" {% if s.department == 'AI & Data Science' %}selected{% endif %}>AI & Data Science</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Semester</label>
+                    <input type="text" class="form-control" name="semester" value="{{ s.semester }}" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Email Address</label>
+                    <input type="email" class="form-control" name="email" value="{{ s.email }}">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Contact Number</label>
+                    <input type="text" class="form-control" name="contact" value="{{ s.contact }}">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-primary" style="background-color: #1A365D;">Save Changes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Confirmation Modal for Student {{ s.id }} -->
+        <div class="modal fade" id="deleteStudentModal{{ s.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <form method="POST" action="{{ url_for('delete_student', student_id=s.id) }}">
+                <div class="modal-header bg-danger text-white">
+                  <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Deletion</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4 text-center">
+                  <p class="mb-1">Are you sure you want to remove <strong>{{ s.name }}</strong> (<code>{{ s.roll_no }}</code>)?</p>
+                  <p class="text-danger small mb-0">This will also delete all associated attendance entries recorded for this student.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                  <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn btn-danger">Yes, Delete Record</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center py-4 text-muted">No student records match the selected filter.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal: Add New Student -->
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('add_student') }}">
+        <div class="modal-header bg-primary text-white" style="background-color: #1A365D !important;">
+          <h5 class="modal-title fw-bold" id="addStudentModalLabel">
+            <i class="bi bi-person-plus-fill me-2"></i> Register New Student
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="mb-3">
+            <label for="new_roll" class="form-label small fw-semibold text-secondary">ROLL NUMBER <span class="text-danger">*</span></label>
+            <input type="text" class="form-control text-uppercase font-monospace" id="new_roll" name="roll_no" placeholder="e.g. CS-2026-007" required>
+            <div class="form-text">Must be a unique collegiate alphanumeric identifier.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="new_name" class="form-label small fw-semibold text-secondary">FULL STUDENT NAME <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="new_name" name="name" placeholder="e.g. Rahul Verma" required>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-7">
+              <label for="new_dept" class="form-label small fw-semibold text-secondary">DEPARTMENT</label>
+              <select class="form-select" id="new_dept" name="department" required>
+                <option value="Computer Science" selected>Computer Science</option>
+                <option value="Information Technology">Information Technology</option>
+                <option value="AI & Data Science">AI & Data Science</option>
+              </select>
+            </div>
+            <div class="col-5">
+              <label for="new_sem" class="form-label small fw-semibold text-secondary">SEMESTER</label>
+              <input type="text" class="form-control" id="new_sem" name="semester" value="Semester V" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="new_email" class="form-label small fw-semibold text-secondary">INSTITUTIONAL EMAIL</label>
+            <input type="email" class="form-control" id="new_email" name="email" placeholder="student@college.edu">
+          </div>
+
+          <div class="mb-3">
+            <label for="new_contact" class="form-label small fw-semibold text-secondary">CONTACT NUMBER</label>
+            <input type="text" class="form-control" id="new_contact" name="contact" placeholder="+91 98765 00000">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="background-color: #1A365D; border-color: #1A365D;">
+            <i class="bi bi-check-circle me-1"></i> Add Student Record
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

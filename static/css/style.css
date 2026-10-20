@@ -1,0 +1,266 @@
+/* ==============================================================================
+   STUDENT ATTENDANCE MANAGEMENT SYSTEM - CUSTOM STYLESHEET
+   Deep Navy & Royal Blue Academic Theme (#1A365D & #2B6CB0)
+   ============================================================================== */
+
+:root {
+  --primary-color: #1A365D;       /* Deep Navy */
+  --secondary-color: #2B6CB0;     /* Royal Slate Blue */
+  --accent-color: #319795;        /* Teal */
+  --bg-color: #F8FAFC;            /* Clean light grey */
+  --card-bg: #FFFFFF;
+  --text-primary: #1A202C;
+  --text-muted: #718096;
+  --border-color: #E2E8F0;
+  --success-color: #276749;       /* Deep Emerald */
+  --success-light: #F0FFF4;
+  --danger-color: #C53030;        /* Deep Crimson */
+  --danger-light: #FFF5F5;
+  --warning-color: #D69E2E;
+  --warning-light: #FEFCBF;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar */
+.navbar-custom {
+  background: linear-gradient(135deg, #1A365D 0%, #2A4365 100%);
+  box-shadow: 0 4px 12px rgba(26, 54, 93, 0.15);
+  padding: 0.8rem 1rem;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  color: #FFFFFF !important;
+}
+
+.nav-link {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85) !important;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #FFFFFF !important;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Stat Cards */
+.stat-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 1.35rem 1.25rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card .stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.stat-card.stat-blue .stat-icon { background: #EBF8FF; color: #2B6CB0; }
+.stat-card.stat-green .stat-icon { background: #F0FFF4; color: #276749; }
+.stat-card.stat-red .stat-icon { background: #FFF5F5; color: #C53030; }
+.stat-card.stat-purple .stat-icon { background: #FAF5FF; color: #6B46C1; }
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
+  margin-top: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Custom Table Styling */
+.table-custom {
+  background: #FFFFFF;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.table-custom thead th {
+  background-color: #1A365D;
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  padding: 0.85rem 1rem;
+  border: none;
+  vertical-align: middle;
+}
+
+.table-custom tbody td {
+  padding: 0.85rem 1rem;
+  font-size: 0.92rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table-custom tbody tr:hover {
+  background-color: #F8FAFC;
+}
+
+/* Radio button toggle pills for attendance */
+.attendance-toggle-group {
+  display: inline-flex;
+  background-color: #EDF2F7;
+  padding: 3px;
+  border-radius: 30px;
+  border: 1px solid #CBD5E0;
+}
+
+.attendance-toggle-group input[type="radio"] {
+  display: none;
+}
+
+.attendance-toggle-group label {
+  padding: 5px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-bottom: 0;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.attendance-toggle-group input[value="Present"]:checked + label {
+  background-color: #276749;
+  color: #FFFFFF;
+  box-shadow: 0 2px 4px rgba(39, 103, 73, 0.3);
+}
+
+.attendance-toggle-group input[value="Absent"]:checked + label {
+  background-color: #C53030;
+  color: #FFFFFF;
+  box-shadow: 0 2px 4px rgba(197, 48, 48, 0.3);
+}
+
+/* Badges */
+.badge-defaulter {
+  background-color: var(--danger-light);
+  color: var(--danger-color);
+  border: 1px solid rgba(197, 48, 48, 0.3);
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.badge-eligible {
+  background-color: var(--success-light);
+  color: var(--success-color);
+  border: 1px solid rgba(39, 103, 73, 0.3);
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+/* Login Card */
+.login-card {
+  max-width: 440px;
+  margin: 3.5rem auto;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: #FFFFFF;
+  box-shadow: 0 10px 25px rgba(26, 54, 93, 0.08);
+}
+
+.login-header {
+  background: linear-gradient(135deg, #1A365D 0%, #2B6CB0 100%);
+  color: #FFFFFF;
+  padding: 2rem 1.5rem 1.5rem;
+  border-top-left-radius: 13px;
+  border-top-right-radius: 13px;
+  text-align: center;
+}
+
+/* Action Banner */
+.action-banner {
+  background: linear-gradient(135deg, #EBF8FF 0%, #E6FFFA 100%);
+  border: 1px solid #BEE3F8;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Footer */
+footer {
+  margin-top: auto;
+  background-color: #FFFFFF;
+  border-top: 1px solid var(--border-color);
+  padding: 1.25rem 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ==============================================================================
+   PRINT STYLESHEET (Formats clean academic report for window.print())
+   ============================================================================== */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 10pt;
+  }
+  .navbar, .btn, .no-print, footer, .alert {
+    display: none !important;
+  }
+  .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+  .table-custom {
+    box-shadow: none !important;
+    border: 1px solid #718096 !important;
+  }
+  .table-custom thead th {
+    background-color: #E2E8F0 !important;
+    color: #000000 !important;
+  }
+  .print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.print-header {
+  display: none;
+}
